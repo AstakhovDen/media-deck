@@ -1,4 +1,5 @@
 build_media.py
 publish.py
+make_icons.py
 site_push.log
 __pycache__/
