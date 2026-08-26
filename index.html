@@ -22,7 +22,16 @@ text-transform:uppercase;color:var(--dim)}
 h1{font-size:27px;margin:5px 0 3px;font-weight:800;color:var(--coral)}
 h1 em{font-style:normal;color:inherit}
 .sub{font-size:13px;color:var(--muted);margin-bottom:24px}
-.tabs{display:flex;border-bottom:1px solid var(--rim);margin:22px 0 4px}
+.search{width:100%;font:inherit;font-size:15px;padding:11px 14px;margin-top:20px;
+background:var(--hull);border:1px solid var(--rim);color:var(--text)}
+.search:focus{outline:2px solid var(--coral);outline-offset:1px}
+.search::placeholder{color:var(--dim)}
+.tab .cnt{color:var(--dim);font-weight:400;font-size:12.5px;margin-left:6px}
+.tab.on .cnt{color:var(--coral)}
+#up{position:fixed;right:18px;bottom:18px;width:44px;height:44px;border:1px solid var(--rim);
+background:var(--hull);color:var(--muted);font-size:18px;cursor:pointer;display:none;line-height:1}
+#up:hover{color:var(--coral);border-color:var(--coral)}
+.tabs{display:flex;border-bottom:1px solid var(--rim);margin:14px 0 4px}
 .tab{flex:1;background:none;border:0;border-bottom:2px solid transparent;
 color:var(--muted);font:inherit;font-size:15px;font-weight:600;padding:13px 10px;
 cursor:pointer;transition:.14s;text-align:center;line-height:1.25}
@@ -31,15 +40,21 @@ cursor:pointer;transition:.14s;text-align:center;line-height:1.25}
 .tab.on{color:var(--coral);border-bottom-color:var(--coral)}
 @media(max-width:520px){.tab{font-size:13.5px;padding:11px 6px}}
 h2{display:none}
+.sech{font-size:15px;font-weight:700;color:var(--text);margin:26px 0 2px}
+.sec:first-child .sech{margin-top:18px}
 .secsub{font-family:Consolas,monospace;font-size:11px;letter-spacing:.14em;
-text-transform:uppercase;color:var(--dim);margin:0 0 13px}
+text-transform:uppercase;color:var(--dim);margin:0 0 12px}
 .sorter{display:flex;gap:0;margin:0 0 13px;border:1px solid var(--rim);width:max-content}
 .sorter button{background:none;border:0;border-right:1px solid var(--rim);color:var(--muted);
 font:inherit;font-size:12px;padding:5px 13px;cursor:pointer}
 .sorter button:last-child{border-right:0}
 .sorter button.on{background:var(--coral);color:#150C08;font-weight:700}
 .card .v{font-family:Consolas,monospace;font-size:11px;color:var(--dim)}
-.card .meta{display:flex;justify-content:space-between;gap:8px;margin-top:6px}
+.card .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
+.card .cop{background:none;border:1px solid var(--rim);color:var(--dim);font:inherit;
+font-size:11px;padding:3px 9px;cursor:pointer;white-space:nowrap;transition:.12s}
+.card .cop:hover{color:var(--coral);border-color:var(--coral)}
+.card .cop.ok{color:var(--go);border-color:var(--go)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .card{background:linear-gradient(180deg,var(--hull),#0E141C);border:1px solid var(--rim);
 overflow:hidden;cursor:pointer;transition:.14s}
@@ -58,11 +73,17 @@ padding:9px 13px;background:var(--hull);font-size:13px}
 .player a{color:var(--coral);text-decoration:none;font-size:12.5px;white-space:nowrap}
 .player button{background:none;border:1px solid var(--rim);color:var(--muted);
 padding:5px 11px;cursor:pointer;font:inherit;font-size:12.5px}
+.player button:hover{color:var(--text);border-color:var(--rim-hot)}
 .lock{background:var(--hull);border:1px solid var(--rim);padding:22px;max-width:400px}
 .lock p{margin:0 0 14px;font-size:13.5px;color:var(--muted)}
 .lock input{width:100%;font:inherit;font-size:16px;text-align:center;letter-spacing:3px;
 padding:11px;border:1px solid var(--rim);background:#0B1119;color:var(--text);margin-bottom:10px}
 .lock input:focus{outline:2px solid var(--coral);outline-offset:1px}
+.pw{position:relative}
+.pw input{padding-right:46px}
+#eye{position:absolute;right:5px;top:3px;width:38px;height:38px;padding:0;background:none;
+border:0;color:var(--muted);font-size:17px;cursor:pointer;line-height:1}
+#eye:hover{color:var(--text);background:none}
 .lock button{width:100%;font:inherit;font-size:15px;padding:11px;border:0;
 background:var(--coral);color:#150C08;font-weight:700;cursor:pointer}
 .lock button:hover{background:var(--coral-hi)}
@@ -75,9 +96,11 @@ background:var(--coral);color:#150C08;font-weight:700;cursor:pointer}
 <h1>Media <em>Deck</em></h1>
 <div class="sub">Вебинары, обучение, разборы. Новое появляется сверху.</div>
 
+<input id="q" class="search" type="search" placeholder="Поиск по названию"
+       autocomplete="off" autocapitalize="off" spellcheck="false" oninput="filter()">
 <div class="tabs" role="tablist">
-  <button class="tab on" id="tab-open" role="tab" onclick="show('open')">Помогаем людям жить лучше</button>
-  <button class="tab" id="tab-partners" role="tab" onclick="show('partners')">Бизнес материалы</button>
+  <button class="tab on" id="tab-open" role="tab" onclick="show('open')">Помогаем людям жить лучше<span class="cnt" id="cnt-open"></span></button>
+  <button class="tab" id="tab-partners" role="tab" onclick="show('partners')">Бизнес материалы<span class="cnt" id="cnt-partners"></span></button>
 </div>
 
 <div id="pane-open"><div id="open"></div></div>
@@ -87,8 +110,11 @@ background:var(--coral);color:#150C08;font-weight:700;cursor:pointer}
     <div class="lock">
       <p>Материалы для партнёров команды. Пароль тот же, что у First Income и Ривенделла.</p>
       <form id="f">
-        <input id="p" type="password" placeholder="пароль" autocomplete="current-password"
-               autocapitalize="off" autocorrect="off" spellcheck="false">
+        <div class="pw">
+          <input id="p" type="password" placeholder="пароль" autocomplete="current-password"
+                 autocapitalize="off" autocorrect="off" spellcheck="false">
+          <button id="eye" type="button" aria-label="Показать пароль">&#128065;</button>
+        </div>
         <button id="go" type="submit">Открыть</button>
       </form>
       <div class="err" id="e" role="status"></div>
@@ -96,6 +122,7 @@ background:var(--coral);color:#150C08;font-weight:700;cursor:pointer}
   </div>
   <div id="partners"></div>
 </div>
+<button id="up" type="button" title="Наверх" onclick="scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
 </div>
 
 <script>
@@ -105,19 +132,42 @@ function card(v){
   d.innerHTML='<div class="thumb"><img loading="lazy" src="https://i.ytimg.com/vi/'+v.id+
     '/mqdefault.jpg" alt=""><div class="play">&#9654;</div></div>'+
     '<div class="body"><div class="t"></div><div class="meta"><span class="d">'+
-    (v.date||'')+'</span><span class="v">'+(v.views!=null?(v.views+' пр.'):'')+'</span></div></div>';
+    (v.date||'')+'</span><button type="button" class="cop">Скопировать</button></div></div>';
   d.querySelector('.t').textContent=v.title||'';
+  d.dataset.t=(v.title||'').toLowerCase();
   d.onclick=function(){open_player(d,v);};
+  var cp=d.querySelector('.cop');
+  cp.onclick=function(ev){
+    ev.stopPropagation();                       // клик по кнопке не должен запускать видео
+    var b=this;
+    navigator.clipboard.writeText('https://youtu.be/'+v.id).then(function(){
+      b.textContent='Скопировано'; b.classList.add('ok');
+      setTimeout(function(){b.textContent='Скопировать'; b.classList.remove('ok');},1600);
+    }).catch(function(){ b.textContent='Не вышло'; });
+  };
   return d;
 }
+var OPEN_PLAYER=null;
+function close_player(){ if(OPEN_PLAYER){OPEN_PLAYER.p.replaceWith(OPEN_PLAYER.card); OPEN_PLAYER=null;} }
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') close_player(); });
 function open_player(cardEl,v){
+  close_player();                      // один плеер за раз: два звука одновременно никому не нужны
   var p=document.createElement('div'); p.className='player';
   p.innerHTML='<iframe allowfullscreen allow="fullscreen; picture-in-picture" '+
     'src="https://www.youtube-nocookie.com/embed/'+v.id+'?rel=0&autoplay=1"></iframe>'+
-    '<div class="bar"><button type="button">Свернуть</button>'+
+    '<div class="bar"><button type="button" class="cl">Свернуть</button>'+
+    '<span style="flex:1"></span>'+
+    '<button type="button" class="cp">Скопировать ссылку</button>'+
     '<a target="_blank" rel="noopener" href="https://youtu.be/'+v.id+'">Открыть на YouTube &rarr;</a></div>';
   cardEl.replaceWith(p);
-  p.querySelector('button').onclick=function(){p.replaceWith(cardEl);};
+  OPEN_PLAYER={p:p,card:cardEl};
+  p.querySelector('.cl').onclick=close_player;
+  p.querySelector('.cp').onclick=function(){
+    var b=this;
+    navigator.clipboard.writeText('https://youtu.be/'+v.id).then(function(){
+      b.textContent='Скопировано'; setTimeout(function(){b.textContent='Скопировать ссылку';},1600);
+    }).catch(function(){ b.textContent='Не вышло'; });
+  };
 }
 function show(which){
   ['open','partners'].forEach(function(k){
@@ -131,11 +181,33 @@ function fill(g,items){
   if(!items.length){g.innerHTML='<div class="empty">пока пусто</div>';return;}
   items.forEach(function(v){g.appendChild(card(v));});
 }
+// Поиск прячет карточки и целые разделы, где ничего не нашлось. Работает только
+// по тому, что уже отрисовано: запертая вкладка так и остаётся запертой.
+function filter(){
+  var q=(document.getElementById('q').value||'').trim().toLowerCase();
+  document.querySelectorAll('.sec').forEach(function(sec){
+    var shown=0;
+    sec.querySelectorAll('.card').forEach(function(c){
+      var ok=!q||(c.dataset.t||'').indexOf(q)>=0;
+      c.style.display=ok?'':'none'; if(ok)shown++;
+    });
+    sec.style.display=(q&&!shown)?'none':'';
+  });
+  counts();
+}
+function counts(){
+  ['open','partners'].forEach(function(k){
+    var n=document.querySelectorAll('#'+k+' .card').length;
+    var el=document.getElementById('cnt-'+k);
+    if(el) el.textContent=n?n:'';
+  });
+}
 function render(box,sections){
   box.innerHTML='';
   (sections||[]).forEach(function(s){
-    if(s.sub){var p=document.createElement('div'); p.className='secsub'; p.textContent=s.sub;
-      p.style.margin='16px 0 13px'; box.appendChild(p);}
+    var sec=document.createElement('div'); sec.className='sec'; box.appendChild(sec);
+    if(s.title){var h=document.createElement('div'); h.className='sech'; h.textContent=s.title; sec.appendChild(h);}
+    if(s.sub){var p=document.createElement('div'); p.className='secsub'; p.textContent=s.sub; sec.appendChild(p);}
     var items=(s.items||[]).slice();
     var g=document.createElement('div'); g.className='grid';
     // Переключатель нужен там, где список длинный. На двух видео он лишний шум.
@@ -152,17 +224,26 @@ function render(box,sections){
         };
         sr.appendChild(btn);
       });
-      box.appendChild(sr);
+      sec.appendChild(sr);
     }
-    box.appendChild(g);
+    sec.appendChild(g);
     fill(g,items);
   });
+  counts();
 }
-var OPEN_FB={"sections": [{"title": "Помогаем людям жить лучше", "sub": "Записи встреч Grand Opening", "items": [{"id": "uL1Nj0ECbeM", "title": "Эффективность нашего мозга: память, внимание, сон | Aug 21, 2026", "floor": "open", "section": "grand-opening", "order": 21, "date": "2026-08-21", "views": 27}, {"id": "d6RD7DslXgc", "title": "Amway Home | Aug 7, 2026", "floor": "open", "section": "grand-opening", "order": 20, "date": "2026-08-07", "views": 34}, {"id": "1_aOLT02sXA", "title": "Creatine + XS | Jul 24, 2026", "floor": "open", "section": "grand-opening", "order": 19, "date": "2026-07-24", "views": 35}, {"id": "FKzo5GJe6Fk", "title": "Здоровье Детей. Астахова Елена | Jul 4, 2026", "floor": "open", "section": "grand-opening", "order": 18, "date": "2026-07-04", "views": 24}, {"id": "20vhEtV-b0o", "title": "Жіноче Здоровʼя - Людмила Ткач (Ukr) | Jun 30, 2026", "floor": "open", "section": "grand-opening", "order": 17, "date": "2026-06-30", "views": 73}, {"id": "Rc7kad9ADU4", "title": "Женское Здоровье. Her Health | Jun 19, 2026", "floor": "open", "section": "grand-opening", "order": 16, "date": "2026-06-19", "views": 45}, {"id": "UXCYvy4hUHk", "title": "Дополнительные средства ухода за кожей Artistry | Jun 5, 2026", "floor": "open", "section": "grand-opening", "order": 15, "date": "2026-06-05", "views": 6}, {"id": "bBvFc7q0BOo", "title": "Важность протеинов. Астахова Елена | May 24, 2026", "floor": "open", "section": "grand-opening", "order": 14, "date": "2026-05-24", "views": 43}, {"id": "rvptrZ0AHfg", "title": "Artistry LongXevity | Mar 20, 2026", "floor": "open", "section": "grand-opening", "order": 12, "date": "2026-03-20", "views": 6}, {"id": "DHNPMwxiok8", "title": "Чистая и вкусная вода с eSpring | Mar 15, 2026", "floor": "open", "section": "grand-opening", "order": 13, "date": "2026-03-15", "views": 43}, {"id": "bxgIu891ekM", "title": "Физиологические методы детоксикации организма | Feb 22, 2026", "floor": "open", "section": "grand-opening", "order": 11, "date": "2026-02-22", "views": 32}, {"id": "2BFMGWzPNIE", "title": "Как усилить иммунитет (запись 2020). Астахова Елена | Feb 4, 2026", "floor": "open", "section": "grand-opening", "order": 10, "date": "2026-02-04", "views": 21}, {"id": "ylGhY3CTWKA", "title": "XS Fitness Program - Татьяна и Андрей Хмара | Jan 2, 2026", "floor": "open", "section": "grand-opening", "order": 8, "date": "2026-01-02", "views": 55}, {"id": "T_PkrzcVvBY", "title": "Восполнение Энергии | Dec 5, 2025", "floor": "open", "section": "grand-opening", "order": 6, "date": "2025-12-05", "views": 76}, {"id": "4sZ_m1o9joA", "title": "Мужское здоровье и энергия | Nov 21, 2025", "floor": "open", "section": "grand-opening", "order": 9, "date": "2025-11-21", "views": 77}, {"id": "_0BlINXJ_xo", "title": "Artistry. Забота о коже и Секретный ингредиент ❤️ | Nov 7, 2025", "floor": "open", "section": "grand-opening", "order": 1, "date": "2025-11-07", "views": 157}, {"id": "-qsFemwc9lw", "title": "Женское здоровье и красота после 40 | Oct 30, 2025", "floor": "open", "section": "grand-opening", "order": 2, "date": "2025-10-30", "views": 123}, {"id": "MXaCeLWhQWY", "title": "Здоровый кишечник, тренировки с XS и профилактика заболеваний | Oct 14, 2025", "floor": "open", "section": "grand-opening", "order": 4, "date": "2025-10-14", "views": 117}, {"id": "3R5TFWYdm_I", "title": "Усиление иммунитета, здоровье простаты, эмоциональное самочувствие | Oct 3, 2025", "floor": "open", "section": "grand-opening", "order": 5, "date": "2025-10-03", "views": 102}, {"id": "XzLaO3qLB28", "title": "Whey Protein + XS fitness program. Product Marketing. ENG | Jun 20, 2025", "floor": "open", "section": "grand-opening", "order": 7, "date": "2025-06-20", "views": 34}, {"id": "Y4IYZesxhn0", "title": "Здоровье кишечника, протеины и др. John Kloosterman, Amway Brand Mgr | Jun 6, 2025", "floor": "open", "section": "grand-opening", "order": 3, "date": "2025-06-06", "views": 136}]}]}, ENC_FB={"salt": "cjBP+Om1r4kaXc9pEj3X5w==", "iv": "RgiSVdpLKfLCwjSq", "data": "ykvQ69hEj+SjVsMOvSQy9XAK+MT93RNUgND3wQVf1QhDzS8t2rAwsSMO97TD9v91td0KPBXbIFGUs4TR/BRviHNrgnwFae5W83JLi3s87tNHf5t9FtHAoLrq9uzvDHZKRCwkL2NQkFgY4Wf/gQUfqjN3IL4r02fI5uJfuHaBuglsyAP55xvO74uo7oi+niWlCBSqsyikTaWdN5NqUcRLtq5bCzlSWDDq1Mj3Ne5Ws5fKCAdsoKF1gRk6GRxuNnctWOxZgKdSo7YNGQL9opzv9ITQtxtoNBgubiawwJ3uMIOHAmxm7sYmwLD4P730jAQkFFu+XYGnlmtdLTll+AqP5Jb6F7XaBke/rxtgs0WrFpqD590dsmiV/u04EuNel45KZKSTV7sgsG+VrkYuNzak0M00gyks1pKyAco9rjncTURfq7isW6310jQZNyZHMq88V2PDo0lciAJ7stJjvukFzNtl19gzWn2CXCHGIVobNHfRlHzGYuIPYok4zUZHUgghlmnpQSOpcTYqkncqkV+lVb6u0EJdE6q3vk8TIVG2oAW19DQLETbOyiIhcXVBI5LGoS1I0gkUpylZEw0nAVTMtnZehTqs4nNHOWzARfuM", "iter": 310000};
+var OPEN_FB={"sections": [{"title": "Помогаем людям жить лучше", "sub": "Записи встреч Grand Opening", "items": [{"id": "uL1Nj0ECbeM", "title": "Эффективность нашего мозга: память, внимание, сон | Aug 21, 2026", "floor": "open", "section": "grand-opening", "order": 21, "date": "2026-08-21", "views": 27}, {"id": "d6RD7DslXgc", "title": "Amway Home | Aug 7, 2026", "floor": "open", "section": "grand-opening", "order": 20, "date": "2026-08-07", "views": 34}, {"id": "1_aOLT02sXA", "title": "Creatine + XS | Jul 24, 2026", "floor": "open", "section": "grand-opening", "order": 19, "date": "2026-07-24", "views": 35}, {"id": "FKzo5GJe6Fk", "title": "Здоровье Детей. Астахова Елена | Jul 4, 2026", "floor": "open", "section": "grand-opening", "order": 18, "date": "2026-07-04", "views": 24}, {"id": "20vhEtV-b0o", "title": "Жіноче Здоровʼя - Людмила Ткач (Ukr) | Jun 30, 2026", "floor": "open", "section": "grand-opening", "order": 17, "date": "2026-06-30", "views": 73}, {"id": "Rc7kad9ADU4", "title": "Женское Здоровье. Her Health | Jun 19, 2026", "floor": "open", "section": "grand-opening", "order": 16, "date": "2026-06-19", "views": 45}, {"id": "UXCYvy4hUHk", "title": "Дополнительные средства ухода за кожей Artistry | Jun 5, 2026", "floor": "open", "section": "grand-opening", "order": 15, "date": "2026-06-05", "views": 6}, {"id": "bBvFc7q0BOo", "title": "Важность протеинов. Астахова Елена | May 24, 2026", "floor": "open", "section": "grand-opening", "order": 14, "date": "2026-05-24", "views": 43}, {"id": "rvptrZ0AHfg", "title": "Artistry LongXevity | Mar 20, 2026", "floor": "open", "section": "grand-opening", "order": 12, "date": "2026-03-20", "views": 6}, {"id": "DHNPMwxiok8", "title": "Чистая и вкусная вода с eSpring | Mar 15, 2026", "floor": "open", "section": "grand-opening", "order": 13, "date": "2026-03-15", "views": 43}, {"id": "bxgIu891ekM", "title": "Физиологические методы детоксикации организма | Feb 22, 2026", "floor": "open", "section": "grand-opening", "order": 11, "date": "2026-02-22", "views": 32}, {"id": "2BFMGWzPNIE", "title": "Как усилить иммунитет (запись 2020). Астахова Елена | Feb 4, 2026", "floor": "open", "section": "grand-opening", "order": 10, "date": "2026-02-04", "views": 21}, {"id": "ylGhY3CTWKA", "title": "XS Fitness Program - Татьяна и Андрей Хмара | Jan 2, 2026", "floor": "open", "section": "grand-opening", "order": 8, "date": "2026-01-02", "views": 55}, {"id": "T_PkrzcVvBY", "title": "Восполнение Энергии | Dec 5, 2025", "floor": "open", "section": "grand-opening", "order": 6, "date": "2025-12-05", "views": 76}, {"id": "4sZ_m1o9joA", "title": "Мужское здоровье и энергия | Nov 21, 2025", "floor": "open", "section": "grand-opening", "order": 9, "date": "2025-11-21", "views": 77}, {"id": "_0BlINXJ_xo", "title": "Artistry. Забота о коже и Секретный ингредиент ❤️ | Nov 7, 2025", "floor": "open", "section": "grand-opening", "order": 1, "date": "2025-11-07", "views": 157}, {"id": "-qsFemwc9lw", "title": "Женское здоровье и красота после 40 | Oct 30, 2025", "floor": "open", "section": "grand-opening", "order": 2, "date": "2025-10-30", "views": 123}, {"id": "MXaCeLWhQWY", "title": "Здоровый кишечник, тренировки с XS и профилактика заболеваний | Oct 14, 2025", "floor": "open", "section": "grand-opening", "order": 4, "date": "2025-10-14", "views": 117}, {"id": "3R5TFWYdm_I", "title": "Усиление иммунитета, здоровье простаты, эмоциональное самочувствие | Oct 3, 2025", "floor": "open", "section": "grand-opening", "order": 5, "date": "2025-10-03", "views": 102}, {"id": "XzLaO3qLB28", "title": "Whey Protein + XS fitness program. Product Marketing. ENG | Jun 20, 2025", "floor": "open", "section": "grand-opening", "order": 7, "date": "2025-06-20", "views": 34}, {"id": "Y4IYZesxhn0", "title": "Здоровье кишечника, протеины и др. John Kloosterman, Amway Brand Mgr | Jun 6, 2025", "floor": "open", "section": "grand-opening", "order": 3, "date": "2025-06-06", "views": 136}]}]}, ENC_FB={"salt": "Sr520iUFdXUvBiM654FmZQ==", "iv": "HWaAVRVhM3AGfA1C", "data": "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", "iter": 310000};
+addEventListener('scroll',function(){
+  document.getElementById('up').style.display = scrollY>500 ? 'block' : 'none';
+});
 fetch('open.json?t='+Date.now()).then(function(r){return r.json();})
   .catch(function(){return OPEN_FB;})
   .then(function(j){render(document.getElementById('open'),j.sections);});
 
+document.getElementById('eye').addEventListener('click',function(){
+  var p=document.getElementById('p');
+  p.type = p.type==='password' ? 'text' : 'password';
+  p.focus();
+});
 document.getElementById('f').addEventListener('submit',function(ev){
   ev.preventDefault();
   var go=document.getElementById('go'), er=document.getElementById('e');
@@ -180,6 +261,7 @@ document.getElementById('f').addEventListener('submit',function(ev){
     var j=JSON.parse(new TextDecoder().decode(buf));
     document.getElementById('lockbox').style.display='none';
     render(document.getElementById('partners'),j.sections);
+    filter();   // если в поиске уже что-то набрано, применяем и к открывшемуся
     // Расшифровали один раз - вкладка остаётся открытой, пароль больше не спрашиваем
   }).catch(function(){
     go.disabled=false; go.textContent='Открыть'; er.textContent='Пароль не подошёл';
