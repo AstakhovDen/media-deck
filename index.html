@@ -22,9 +22,18 @@ text-transform:uppercase;color:var(--dim)}
 h1{font-size:27px;margin:5px 0 3px;font-weight:800;color:var(--coral)}
 h1 em{font-style:normal;color:inherit}
 .sub{font-size:13px;color:var(--muted);margin-bottom:24px}
-h2{font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
-font-family:Consolas,monospace;margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+h2{font-size:15px;letter-spacing:.03em;color:var(--text);font-weight:700;
+margin:32px 0 2px;display:flex;align-items:center;gap:12px}
 h2::after{content:"";flex:1;height:1px;background:var(--rim)}
+.secsub{font-family:Consolas,monospace;font-size:11px;letter-spacing:.14em;
+text-transform:uppercase;color:var(--dim);margin:0 0 13px}
+.sorter{display:flex;gap:0;margin:0 0 13px;border:1px solid var(--rim);width:max-content}
+.sorter button{background:none;border:0;border-right:1px solid var(--rim);color:var(--muted);
+font:inherit;font-size:12px;padding:5px 13px;cursor:pointer}
+.sorter button:last-child{border-right:0}
+.sorter button.on{background:var(--coral);color:#150C08;font-weight:700}
+.card .v{font-family:Consolas,monospace;font-size:11px;color:var(--dim)}
+.card .meta{display:flex;justify-content:space-between;gap:8px;margin-top:6px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .card{background:linear-gradient(180deg,var(--hull),#0E141C);border:1px solid var(--rim);
 overflow:hidden;cursor:pointer;transition:.14s}
@@ -60,13 +69,11 @@ background:var(--coral);color:#150C08;font-weight:700;cursor:pointer}
 <h1>Media <em>Deck</em></h1>
 <div class="sub">Вебинары, обучение, разборы. Новое появляется сверху.</div>
 
-<h2>Открыто</h2>
-<div class="grid" id="open"><div class="empty">пока пусто</div></div>
+<div id="open"></div>
 
-<h2>Партнёрам</h2>
 <div id="lockbox">
   <div class="lock">
-    <p>Этаж для партнёров команды. Пароль тот же, что у First Income.</p>
+    <p>Раздел для партнёров команды. Пароль тот же, что у First Income и Ривенделла.</p>
     <form id="f">
       <input id="p" type="password" placeholder="пароль" autocomplete="current-password"
              autocapitalize="off" autocorrect="off" spellcheck="false">
@@ -75,7 +82,7 @@ background:var(--coral);color:#150C08;font-weight:700;cursor:pointer}
     <div class="err" id="e" role="status"></div>
   </div>
 </div>
-<div class="grid" id="partners" style="display:none"></div>
+<div id="partners"></div>
 </div>
 
 <script>
@@ -84,7 +91,8 @@ function card(v){
   var d=document.createElement('div'); d.className='card';
   d.innerHTML='<div class="thumb"><img loading="lazy" src="https://i.ytimg.com/vi/'+v.id+
     '/mqdefault.jpg" alt=""><div class="play">&#9654;</div></div>'+
-    '<div class="body"><div class="t"></div><div class="d">'+(v.added||'')+'</div></div>';
+    '<div class="body"><div class="t"></div><div class="meta"><span class="d">'+
+    (v.date||'')+'</span><span class="v">'+(v.views!=null?(v.views+' пр.'):'')+'</span></div></div>';
   d.querySelector('.t').textContent=v.title||'';
   d.onclick=function(){open_player(d,v);};
   return d;
@@ -98,15 +106,42 @@ function open_player(cardEl,v){
   cardEl.replaceWith(p);
   p.querySelector('button').onclick=function(){p.replaceWith(cardEl);};
 }
-function render(box,items){
-  box.innerHTML='';
-  if(!items||!items.length){box.innerHTML='<div class="empty">пока пусто</div>';return;}
-  items.forEach(function(v){box.appendChild(card(v));});
+function fill(g,items){
+  g.innerHTML='';
+  if(!items.length){g.innerHTML='<div class="empty">пока пусто</div>';return;}
+  items.forEach(function(v){g.appendChild(card(v));});
 }
-var OPEN_FB={"items": []}, ENC_FB={"salt": "RuTnUbJQZtCe8wWYcvAUmQ==", "iv": "Wnn8xO5r9obayGnf", "data": "ICJg80b6K5ncytMnkl3+me9SwGdOJ5oywlJiBHZoYnCmqh7OyRhkcUZAAt4cotfYcYeEDb3Kx6cuhQf6S59zgoO5A5tdLEvknf3+yvyIqoRYC2OErrQa0wL+MEZ034Py+LWykrj/U2U5+t8mYQFxlbn1VxgWiL1WR4BRfKgrCzjMNPJ89Ua98kd3qH2gsYSFmjnO4J/XC677VKQJXoixpXbgOEMxZf8LHn0jdbDSAkEAiFSCb8RLy0ZO8CzXS26qpoAbB416W/tP/vQpzP2z0FW11iZUIgKCatWMU0hzD39cwh6x21AiX3go4V2usPki8XZa8CmcbhwO1ctf3wtKgecn7Rf0zApjvjX+px2/UUp+/ls2imOyPvjeABlEQBKCBS3e9Dxhw0MDr9p4kWjh1agsV9cRmniMJD4Uc7M+n7ip+amu6lyPwuMJrTMmdGwecMNVPkrm67yXgw==", "iter": 310000};
+function render(box,sections){
+  box.innerHTML='';
+  (sections||[]).forEach(function(s){
+    var h=document.createElement('h2'); h.textContent=s.title; box.appendChild(h);
+    if(s.sub){var p=document.createElement('div'); p.className='secsub'; p.textContent=s.sub; box.appendChild(p);}
+    var items=(s.items||[]).slice();
+    var g=document.createElement('div'); g.className='grid';
+    // Переключатель нужен там, где список длинный. На двух видео он лишний шум.
+    if(items.length>5){
+      var sr=document.createElement('div'); sr.className='sorter';
+      [['Свежие',function(a,b){return (b.date||'').localeCompare(a.date||'');}],
+       ['Популярные',function(a,b){return (b.views||0)-(a.views||0);}]
+      ].forEach(function(m,n){
+        var btn=document.createElement('button'); btn.type='button'; btn.textContent=m[0];
+        if(n===0) btn.className='on';
+        btn.onclick=function(){
+          sr.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+          btn.classList.add('on'); fill(g,items.slice().sort(m[1]));
+        };
+        sr.appendChild(btn);
+      });
+      box.appendChild(sr);
+    }
+    box.appendChild(g);
+    fill(g,items);
+  });
+}
+var OPEN_FB={"sections": [{"title": "Помогаем людям жить лучше", "sub": "Записи встреч Grand Opening", "items": [{"id": "uL1Nj0ECbeM", "title": "Эффективность нашего мозга: память, внимание, сон | Aug 21, 2026", "floor": "open", "section": "grand-opening", "order": 21, "date": "2026-08-21", "views": 27}, {"id": "d6RD7DslXgc", "title": "Amway Home | Aug 7, 2026", "floor": "open", "section": "grand-opening", "order": 20, "date": "2026-08-07", "views": 34}, {"id": "1_aOLT02sXA", "title": "Creatine + XS | Jul 24, 2026", "floor": "open", "section": "grand-opening", "order": 19, "date": "2026-07-24", "views": 35}, {"id": "FKzo5GJe6Fk", "title": "Здоровье Детей. Астахова Елена | Jul 4, 2026", "floor": "open", "section": "grand-opening", "order": 18, "date": "2026-07-04", "views": 24}, {"id": "20vhEtV-b0o", "title": "Жіноче Здоровʼя - Людмила Ткач (Ukr) | Jun 30, 2026", "floor": "open", "section": "grand-opening", "order": 17, "date": "2026-06-30", "views": 73}, {"id": "Rc7kad9ADU4", "title": "Женское Здоровье. Her Health | Jun 19, 2026", "floor": "open", "section": "grand-opening", "order": 16, "date": "2026-06-19", "views": 45}, {"id": "UXCYvy4hUHk", "title": "Дополнительные средства ухода за кожей Artistry | Jun 5, 2026", "floor": "open", "section": "grand-opening", "order": 15, "date": "2026-06-05", "views": 6}, {"id": "bBvFc7q0BOo", "title": "Важность протеинов. Астахова Елена | May 24, 2026", "floor": "open", "section": "grand-opening", "order": 14, "date": "2026-05-24", "views": 43}, {"id": "rvptrZ0AHfg", "title": "Artistry LongXevity | Mar 20, 2026", "floor": "open", "section": "grand-opening", "order": 12, "date": "2026-03-20", "views": 6}, {"id": "DHNPMwxiok8", "title": "Чистая и вкусная вода с eSpring | Mar 15, 2026", "floor": "open", "section": "grand-opening", "order": 13, "date": "2026-03-15", "views": 43}, {"id": "bxgIu891ekM", "title": "Физиологические методы детоксикации организма | Feb 22, 2026", "floor": "open", "section": "grand-opening", "order": 11, "date": "2026-02-22", "views": 32}, {"id": "2BFMGWzPNIE", "title": "Как усилить иммунитет (запись 2020). Астахова Елена | Feb 4, 2026", "floor": "open", "section": "grand-opening", "order": 10, "date": "2026-02-04", "views": 21}, {"id": "ylGhY3CTWKA", "title": "XS Fitness Program - Татьяна и Андрей Хмара | Jan 2, 2026", "floor": "open", "section": "grand-opening", "order": 8, "date": "2026-01-02", "views": 55}, {"id": "T_PkrzcVvBY", "title": "Восполнение Энергии | Dec 5, 2025", "floor": "open", "section": "grand-opening", "order": 6, "date": "2025-12-05", "views": 76}, {"id": "4sZ_m1o9joA", "title": "Мужское здоровье и энергия | Nov 21, 2025", "floor": "open", "section": "grand-opening", "order": 9, "date": "2025-11-21", "views": 77}, {"id": "_0BlINXJ_xo", "title": "Artistry. Забота о коже и Секретный ингредиент ❤️ | Nov 7, 2025", "floor": "open", "section": "grand-opening", "order": 1, "date": "2025-11-07", "views": 157}, {"id": "-qsFemwc9lw", "title": "Женское здоровье и красота после 40 | Oct 30, 2025", "floor": "open", "section": "grand-opening", "order": 2, "date": "2025-10-30", "views": 123}, {"id": "MXaCeLWhQWY", "title": "Здоровый кишечник, тренировки с XS и профилактика заболеваний | Oct 14, 2025", "floor": "open", "section": "grand-opening", "order": 4, "date": "2025-10-14", "views": 117}, {"id": "3R5TFWYdm_I", "title": "Усиление иммунитета, здоровье простаты, эмоциональное самочувствие | Oct 3, 2025", "floor": "open", "section": "grand-opening", "order": 5, "date": "2025-10-03", "views": 102}, {"id": "XzLaO3qLB28", "title": "Whey Protein + XS fitness program. Product Marketing. ENG | Jun 20, 2025", "floor": "open", "section": "grand-opening", "order": 7, "date": "2025-06-20", "views": 34}, {"id": "Y4IYZesxhn0", "title": "Здоровье кишечника, протеины и др. John Kloosterman, Amway Brand Mgr | Jun 6, 2025", "floor": "open", "section": "grand-opening", "order": 3, "date": "2025-06-06", "views": 136}]}]}, ENC_FB={"salt": "1yTulaZn7TVr02QiAOa/8g==", "iv": "1gXPc3wcGKrydhDO", "data": "M6Fzf67DDELX1v/yAgugczjq4VxRrMqSRgqSMsjmyStyThBPiFxFML+IyHZbzwJjxZvxkA4HyuC/gkQUq21so7ZH08FYku/JAZx2WyJdGzYRHl9kj9ribn/NYi8i2hP6m7+w5io3n7yCGdLioFaMPZkjcqVl6UI4je7sSWmv0QgO9q5NQyWKuFyqRnQIThub2N5PV4vrSxbUpR4TyEkUeVzJSDPwrx8LJi64p+k84q8jOFOlr3AMVVhQUNQq9619eaCvFGu3h5agrADTu0G+6u6jbyJsIsvpW9oe4rYorA/2n7giHpzVhnt5/AV1b3eT/MEKeVhPv9ZrnHArJ+mwulvqMABo7AN4/3cEcxUmtoY8kBMB81OD8IlZapiZ1gCyhjGEF0bGTZwysXBq7JxdKFhwXcQEdxAVZre7/PTTlmYZpGibu66AGEU/4GLkelV2BKJ+0B6XkyxVdApUgP7Kgc25KlBz1fWtsmE/jV40aBCLLlcygw494BnA90rWNBc8s8N1oDskOYR/aaAGRqykypFWX57U6qbgo91qPa0PfYssPnLnHvyLxMSfPGxypRX+xV8g1/6/Eyy13HCToB6P8go=", "iter": 310000};
 fetch('open.json?t='+Date.now()).then(function(r){return r.json();})
   .catch(function(){return OPEN_FB;})
-  .then(function(j){render(document.getElementById('open'),j.items);});
+  .then(function(j){render(document.getElementById('open'),j.sections);});
 
 document.getElementById('f').addEventListener('submit',function(ev){
   ev.preventDefault();
@@ -124,8 +159,7 @@ document.getElementById('f').addEventListener('submit',function(ev){
   }).then(function(buf){
     var j=JSON.parse(new TextDecoder().decode(buf));
     document.getElementById('lockbox').style.display='none';
-    var g=document.getElementById('partners'); g.style.display='';
-    render(g,j.items);
+    render(document.getElementById('partners'),j.sections);
   }).catch(function(){
     go.disabled=false; go.textContent='Открыть'; er.textContent='Пароль не подошёл';
   });
